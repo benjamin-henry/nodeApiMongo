@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 //         useNewUrlParser: true, 
 //         useUnifiedTopology: true,
 //     });
-//     const db = client.db('myAppdb');
+//     const db = client.db(process.env.DB_NAME_APP);
 //     const result = await db.collection('users').findOne(params);
 //     res.json(result)
 //     client.close();
@@ -31,7 +31,7 @@ router.get('/', (req, res) => {
 //         useNewUrlParser: true, 
 //         useUnifiedTopology: true,
 //     });
-//     const db = client.db('myAppdb');
+//     const db = client.db(process.env.DB_NAME_APP);
 //     const result = await db.collection('users').findOne(params);
 //     if(result == null) {
 //         const _result = await db.collection('users').insertOne(params);
@@ -56,7 +56,7 @@ router.post('/create', async (req, res, next) => {
         useNewUrlParser: true, 
         useUnifiedTopology: true,
     });
-    const db = client.db('myAppdb');
+    const db = client.db(process.env.DB_NAME_APP);
     const result = await db.collection('users').insertOne(params);
     res.json(result)
     client.close();
@@ -69,7 +69,7 @@ router.post('/read', async (req, res, next) => {
         useNewUrlParser: true, 
         useUnifiedTopology: true,
     });
-    const db = client.db('myAppdb');
+    const db = client.db(process.env.DB_NAME_APP);
     const result = await db.collection('users').findOne(params);
     res.json(result)
     client.close();
@@ -78,9 +78,20 @@ router.post('/read', async (req, res, next) => {
 // UPDATE
 router.post('/update', async (req, res, next) => {
     const params = req.body.params;
-    res.json({
-        message:'update attempt'
-    })
+    const query = params.query;
+    
+    const client = await MongoClient.connect(process.env.DB_URL, { 
+        useNewUrlParser: true, 
+        useUnifiedTopology: true,
+    });
+    const db = client.db(process.env.DB_NAME_APP);
+    const result = await db.collection('users').findOne(query);
+    if(result) {
+        const r = await db.collection('users').updateOne(query, {$set:params.newValues});
+        res.json(r)
+    }
+    
+    client.close();
 })
 
 // DELETE
@@ -90,7 +101,7 @@ router.post('/delete', async (req, res, next) => {
         useNewUrlParser: true, 
         useUnifiedTopology: true,
     });
-    const db = client.db('myAppdb');
+    const db = client.db(process.env.DB_NAME_APP);
     const result = await db.collection('users').deleteOne(params);
     res.json(result)
     client.close();
