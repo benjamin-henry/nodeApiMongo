@@ -1,71 +1,99 @@
 const router = require('express').Router();
 let MongoClient = require("mongodb").MongoClient;
 
+
 router.get('/', (req, res) => {
     res.json({
-      message: 'API - auth'
+        message: 'API - auth'
     });
-  });
+});
 
-router.post('/login', (req, res, next) => {
+// router.post('/login', (req, res, next) => {
+//     const params = req.body.params
+//     const client = await MongoClient.connect(process.env.DB_URL, { 
+//         useNewUrlParser: true, 
+//         useUnifiedTopology: true,
+//     });
+//     const db = client.db('myAppdb');
+//     const result = await db.collection('users').findOne(params);
+//     res.json(result)
+//     client.close();
+// })
+
+// router.post('/logout', (req, res, next) => {  
+//     const params = req.body.params
+    
+// })
+
+router.post('/register', async (req, res, next) => {
     const params = req.body.params
-    MongoClient.connect(process.env.DB_URL, function(err, db) {
-        if (err) {
-            res.json({msg:"connection failed"});
-        } else {
-            connected = true;
-            let users = db.db('myAppdb').collection('users');
-            users.findOne(params, function(err, result) {
-                err ? res.json({msg:"query failed"}) 
-                : result ? res.json({user:result}) 
-                : res.json({user:null});
-            })
-            db.close()
-        }
-    }) 
+    const client = await MongoClient.connect(process.env.DB_URL, { 
+        useNewUrlParser: true, 
+        useUnifiedTopology: true,
+    });
+    const db = client.db('myAppdb');
+    const result = await db.collection('users').findOne(params);
+    if(result == null) {
+        const r = await db.collection('users').insertOne(params);
+        res.json(r)
+    } else {
+        res.json({
+            "result": {
+                "n": 0,
+                "ok": 0
+            },
+            msg: "user already exists"
+        })
+    }
+    client.close();
 })
 
-router.post('/logout', (req, res, next) => {  
+
+// CREATE
+router.post('/create', async (req, res, next) => {
     const params = req.body.params
-    MongoClient.connect(process.env.DB_URL, function(err, db) {
-        if (err) {
-            res.json({msg:"connection failed"});
-        } else {
-            connected = true;
-            let users = db.db('myAppdb').collection('users');
-            users.findOne(params, function(err, result) {
-                err ? res.json({msg:"query failed"}) 
-                : result ? res.json({user:result}) 
-                : res.json({user:null});
-            })
-            db.close()
-        }
-    }) 
+    const client = await MongoClient.connect(process.env.DB_URL, { 
+        useNewUrlParser: true, 
+        useUnifiedTopology: true,
+    });
+    const db = client.db('myAppdb');
+    const r = await db.collection('users').insertOne(params);
+    res.json(result)
+    client.close();
 })
 
-router.post('/register', (req, res, next) => {
+// READ
+router.post('/read', async (req, res, next) => {
     const params = req.body.params
-    MongoClient.connect(process.env.DB_URL, function(err, db) {
-        if (err) {
-            res.json({msg:"connection failed"});
-        } else {
-            connected = true;
-            let users = db.db('myAppdb').collection('users');
-            // users.insert(params, function(err, result) {
-            //     err ? res.json({msg:err}) 
-            //     : result ? res.json({user:result}) 
-            //     : res.json({user:null});
-            // })
-            db.close()
-        }
-    })
+    const client = await MongoClient.connect(process.env.DB_URL, { 
+        useNewUrlParser: true, 
+        useUnifiedTopology: true,
+    });
+    const db = client.db('myAppdb');
+    const result = await db.collection('users').findOne(params);
+    res.json(result)
+    client.close();
 })
 
-router.post('/update', (req, res, next) => {
+// UPDATE
+router.post('/update', async (req, res, next) => {
     const params = req.body.params;
     res.json({
         message:'update attempt'
     })
+})
+
+// DELETE
+router.post('/delete', async (req, res, next) => {
+    const params = req.body.params
+    const client = await MongoClient.connect(process.env.DB_URL, { 
+        useNewUrlParser: true, 
+        useUnifiedTopology: true,
+    });
+    const db = client.db('myAppdb');
+    const result = await db.collection('users').remove(params);
+    res.json(result)
+    client.close();
 })
 
 
