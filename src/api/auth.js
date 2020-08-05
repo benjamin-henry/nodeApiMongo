@@ -25,28 +25,28 @@ router.get('/', (req, res) => {
     
 // })
 
-router.post('/register', async (req, res, next) => {
-    const params = req.body.params
-    const client = await MongoClient.connect(process.env.DB_URL, { 
-        useNewUrlParser: true, 
-        useUnifiedTopology: true,
-    });
-    const db = client.db('myAppdb');
-    const result = await db.collection('users').findOne(params);
-    if(result == null) {
-        const r = await db.collection('users').insertOne(params);
-        res.json(r)
-    } else {
-        res.json({
-            "result": {
-                "n": 0,
-                "ok": 0
-            },
-            msg: "user already exists"
-        })
-    }
-    client.close();
-})
+// router.post('/register', async (req, res, next) => {
+//     const params = req.body.params
+//     const client = await MongoClient.connect(process.env.DB_URL, { 
+//         useNewUrlParser: true, 
+//         useUnifiedTopology: true,
+//     });
+//     const db = client.db('myAppdb');
+//     const result = await db.collection('users').findOne(params);
+//     if(result == null) {
+//         const _result = await db.collection('users').insertOne(params);
+//         res.json(_result)
+//     } else {
+//         res.json({
+//             "result": {
+//                 "n": 0,
+//                 "ok": 0
+//             },
+//             msg: "user already exists"
+//         })
+//     }
+//     client.close();
+// })
 
 
 // CREATE
@@ -57,7 +57,7 @@ router.post('/create', async (req, res, next) => {
         useUnifiedTopology: true,
     });
     const db = client.db('myAppdb');
-    const r = await db.collection('users').insertOne(params);
+    const result = await db.collection('users').insertOne(params);
     res.json(result)
     client.close();
 })
