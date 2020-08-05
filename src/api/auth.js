@@ -91,7 +91,7 @@ router.post('/delete', async (req, res, next) => {
         useUnifiedTopology: true,
     });
     const db = client.db('myAppdb');
-    const result = await db.collection('users').remove(params);
+    const result = await db.collection('users').deleteOne(params);
     res.json(result)
     client.close();
 })
